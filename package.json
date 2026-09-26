@@ -1,0 +1,17 @@
+{
+  "name": "movie-guessr",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Guess movies from your Letterboxd watch history, one still at a time",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

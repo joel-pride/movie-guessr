@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie Guessr — how well do you know your own watchlist?</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">🎬</span> movie <em>guessr</em></div>
+      <div class="topbar-stats" id="topbarStats" hidden>
+        <span id="statRound"></span>
+        <span class="dot-sep"></span>
+        <span id="statScore"></span>
+      </div>
+    </header>
+
+    <div class="banner" id="tmdbBanner" hidden>
+      No TMDB API key configured. Add <code>TMDB_API_KEY=…</code> to your
+      <code>.env</code> file and restart the server to play.
+    </div>
+
+    <!-- Setup -->
+    <section class="screen" id="screen-setup">
+      <div class="hero">
+        <h1>You've seen them all.<br/><span class="accent">But do you remember them?</span></h1>
+        <p class="subtitle">
+          Enter your Letterboxd username. We'll pick films you've watched and show you
+          five stills, one at a time — starting zoomed deep into the frame and pulling
+          back with every reveal. Name the film using as few stills as possible.
+        </p>
+        <form class="setup-form" id="setupForm">
+          <div class="input-wrap">
+            <span class="at">@</span>
+            <input
+              id="usernameInput"
+              type="text"
+              placeholder="your Letterboxd username"
+              autocomplete="off"
+              autocapitalize="none"
+              spellcheck="false"
+              maxlength="60"
+              autofocus
+            />
+          </div>
+          <div class="field-row">
+            <label class="rounds-label" for="difficultySelect">Mode</label>
+            <select id="difficultySelect">
+              <option value="normal" selected>Normal — TMDB stills</option>
+              <option value="insane">Insane — real footage</option>
+            </select>
+            <span class="dot-sep"></span>
+            <label class="rounds-label" for="roundsSelect">Rounds</label>
+            <select id="roundsSelect">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-big" id="startBtn">Play</button>
+        </form>
+        <p class="setup-error" id="setupError" role="alert" hidden></p>
+      </div>
+    </section>
+
+    <!-- Loading -->
+    <section class="screen" id="screen-loading" hidden>
+      <div class="loader-wrap">
+        <div class="spinner"></div>
+        <p class="loading-text" id="loadingText">Fetching your Letterboxd films…</p>
+        <p class="loading-sub" id="loadingSub"></p>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section class="screen" id="screen-game" hidden>
+      <div class="stage-wrap">
+        <div class="stage" id="stage">
+          <div id="stillZoom">
+            <img id="stillImage" alt="A still from the mystery film" />
+          </div>
+          <div class="stage-spinner" id="stageSpinner"></div>
+          <div class="preparing" id="preparingOverlay" hidden>
+            <div class="stage-spinner"></div>
+            <p>Pulling frames from the film&rsquo;s own footage&hellip;</p>
+          </div>
+        </div>
+        <div class="stage-meta">
+          <div class="stills-strip" id="stillsStrip" aria-label="Stills revealed"></div>
+          <div class="worth" id="worthBadge"></div>
+        </div>
+      </div>
+
+      <form class="guess-row" id="guessForm">
+        <input
+          id="guessInput"
+          type="text"
+          placeholder="Name the film…"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="120"
+        />
+        <button type="submit" class="btn btn-primary" id="guessBtn">Guess</button>
+      </form>
+      <p class="guess-feedback" id="guessFeedback" role="status"></p>
+
+      <div class="game-actions">
+        <button class="btn btn-ghost" id="nextStillBtn">Skip this still</button>
+        <button class="btn btn-ghost btn-danger" id="giveUpBtn">Give up</button>
+      </div>
+    </section>
+
+    <!-- Round result -->
+    <section class="screen" id="screen-result" hidden>
+      <div class="result-card" id="resultCard">
+        <div class="verdict" id="verdictText"></div>
+        <div class="result-body">
+          <img id="resultPoster" class="result-poster" alt="Film poster" />
+          <div class="result-info">
+            <h2 id="resultTitle"></h2>
+            <p class="result-year" id="resultYear"></p>
+            <p class="result-points" id="resultPoints"></p>
+            <div class="result-links">
+              <a id="letterboxdLink" target="_blank" rel="noopener">View on Letterboxd ↗</a>
+              <a id="tmdbLink" target="_blank" rel="noopener">TMDB ↗</a>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-big" id="nextRoundBtn"></button>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="screen" id="screen-summary" hidden>
+      <div class="summary-card">
+        <h1 id="summaryHeadline"></h1>
+        <p class="summary-score" id="summaryScore"></p>
+        <div class="summary-chips" id="summaryChips"></div>
+        <div class="summary-actions">
+          <button class="btn btn-primary btn-big" id="playAgainBtn">Play again</button>
+          <button class="btn btn-ghost" id="newPlayerBtn">Change player</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
